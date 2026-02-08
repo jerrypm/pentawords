@@ -73,7 +73,7 @@ fun HexagonButton(
 
     Box(
         modifier = modifier
-            .size(72.dp)
+            .size(80.dp)
             .clip(HexagonShape())
             .background(backgroundColor)
             .clickable(

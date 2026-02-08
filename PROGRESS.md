@@ -86,31 +86,52 @@ This project uses `targetSdk = 35` for Play Console compliance while `minSdk = 2
 | Shuffle button | Done |
 | Delete button | Done |
 | Found words list (expandable) | Done |
+| Language selection screen | Done |
+| Multi-language translation | Done |
+| Teal color scheme (#025B62) | Done |
+| Improved honeycomb layout | Done |
+
+### Supported Languages
+
+| Language | Code | Native Name |
+|----------|------|-------------|
+| Indonesian | id | Bahasa Indonesia |
+| Malaysian | ms | Bahasa Melayu |
+| Chinese | zh | 中文 |
+| Japanese | ja | 日本語 |
+| Korean | ko | 한국어 |
 
 ## Project Structure
 
 ```
 app/src/main/java/com/jeripurnama/pentaword/
 ├── data/
-│   └── DictionaryRepository.kt       # Word dictionary management
+│   ├── DictionaryRepository.kt       # Word dictionary management
+│   ├── LanguagePreferences.kt        # Language settings storage
+│   └── TranslationRepository.kt      # Word translations
 ├── domain/
 │   ├── GameState.kt                  # Game state & rank definitions
+│   ├── Language.kt                   # Language enum
 │   ├── PuzzleGenerator.kt            # Puzzle generation logic
 │   └── WordValidator.kt              # Word validation rules
 ├── presentation/
 │   ├── components/
 │   │   ├── ActionButtons.kt          # Delete, Shuffle, Enter buttons
-│   │   ├── FoundWordsList.kt         # Expandable found words
+│   │   ├── FoundWordsList.kt         # Found words with translations
 │   │   ├── HexagonButton.kt          # Individual hex button
 │   │   ├── Honeycomb.kt              # 7-letter honeycomb layout
 │   │   ├── ScoreDisplay.kt           # Score & rank progress
 │   │   └── WordDisplay.kt            # Current word input display
+│   ├── navigation/
+│   │   └── NavGraph.kt               # Navigation setup
 │   ├── screens/
-│   │   └── GameScreen.kt             # Main game screen
+│   │   ├── GameScreen.kt             # Main game screen
+│   │   └── LanguageSelectionScreen.kt # Language picker
 │   └── viewmodel/
-│       └── GameViewModel.kt          # Game logic & state management
+│       ├── GameViewModel.kt          # Game logic & state management
+│       └── LanguageViewModel.kt      # Language state management
 ├── ui/theme/
-│   ├── Color.kt                      # Color definitions
+│   ├── Color.kt                      # Teal color scheme
 │   ├── Theme.kt                      # Material3 theme
 │   └── Type.kt                       # Typography
 └── MainActivity.kt                   # Entry point
@@ -198,6 +219,7 @@ app/src/main/java/com/jeripurnama/pentaword/
 | Lifecycle | 2.8.7 |
 | Core KTX | 1.15.0 |
 | Coroutines Android | 1.9.0 |
+| DataStore Preferences | 1.1.1 |
 
 ## Project Rules
 
@@ -207,6 +229,33 @@ See `CLAUDE.md` for AI assistant rules including:
 - Code quality standards
 
 ## Changelog
+
+### 2026-02-08 (Update 7)
+
+- Created translation asset files for all 5 languages (1,611 words each):
+  - translations_id.txt (Indonesian)
+  - translations_ms.txt (Malaysian)
+  - translations_zh.txt (Chinese)
+  - translations_ja.txt (Japanese)
+  - translations_ko.txt (Korean)
+- Updated TranslationRepository to load translations from asset files
+- Translations now loaded dynamically with caching for performance
+- All words in dictionary now have translations in all languages
+
+### 2026-02-08 (Update 6)
+
+- Expanded TranslationRepository with 250+ word translations
+- Translations now show properly in Found Words list (e.g., RAPID → cepat)
+
+### 2026-02-08 (Update 5)
+
+- Added Language Selection screen with 5 languages (ID, MY, ZH, JA, KO)
+- Added multi-language translation support with DataStore preferences
+- Added translation display in Found Words list
+- Changed color scheme from yellow to teal (#025B62)
+- Improved Honeycomb layout with more padding and subtle randomization
+- Added navigation between Language Selection and Game screens
+- Created LanguageViewModel, LanguagePreferences, TranslationRepository
 
 ### 2026-02-08 (Update 4)
 

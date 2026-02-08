@@ -40,4 +40,10 @@
     <string name="cd_new_puzzle">New Puzzle</string>
     <string name="cd_expand">Expand</string>
     <string name="cd_collapse">Collapse</string>
+
+    <!-- Language Selection -->
+    <string name="title_select_language">Select Translation Language</string>
+    <string name="subtitle_select_language">Choose your preferred language for word translations</string>
+    <string name="btn_continue">Continue</string>
+    <string name="label_no_translation">-</string>
 </resources>

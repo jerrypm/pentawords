@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jeripurnama.pentaword.R
+import com.jeripurnama.pentaword.domain.Language
 import com.jeripurnama.pentaword.presentation.components.ActionButtons
 import com.jeripurnama.pentaword.presentation.components.FoundWordsList
 import com.jeripurnama.pentaword.presentation.components.Honeycomb
@@ -42,6 +43,7 @@ import com.jeripurnama.pentaword.presentation.viewmodel.GameViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameScreen(
+    selectedLanguage: Language = Language.INDONESIAN,
     viewModel: GameViewModel = viewModel()
 ) {
     val gameState by viewModel.gameState.collectAsState()
@@ -135,7 +137,8 @@ fun GameScreen(
                 // Found words list
                 FoundWordsList(
                     foundWords = gameState.foundWords,
-                    pangrams = gameState.pangrams
+                    pangrams = gameState.pangrams,
+                    selectedLanguage = selectedLanguage
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))

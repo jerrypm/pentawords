@@ -8,18 +8,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,20 +27,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jeripurnama.pentaword.R
+import com.jeripurnama.pentaword.data.TranslationRepository
+import com.jeripurnama.pentaword.domain.Language
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FoundWordsList(
     foundWords: List<String>,
     pangrams: Set<String>,
+    selectedLanguage: Language,
     modifier: Modifier = Modifier
 ) {
     var isExpanded by remember { mutableStateOf(true) }
+    val context = LocalContext.current
+    val translationRepository = remember { TranslationRepository(context) }
 
     Column(
         modifier = modifier
@@ -104,19 +105,31 @@ fun FoundWordsList(
                     )
                 }
             } else {
-                FlowRow(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .padding(top = 8.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surface)
                 ) {
-                    foundWords.sortedByDescending { it.length }.forEach { word ->
+                    foundWords.sortedByDescending { it.length }.forEachIndexed { index, word ->
                         val isPangram = word.uppercase() in pangrams.map { it.uppercase() }
-                        WordChip(
+                        val translation = translationRepository.getTranslation(
+                            word, selectedLanguage
+                        )
+
+                        WordRow(
                             word = word,
+                            translation = translation,
                             isPangram = isPangram
                         )
+
+                        if (index < foundWords.size - 1) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 12.dp),
+                                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                            )
+                        }
                     }
                 }
             }
@@ -125,32 +138,42 @@ fun FoundWordsList(
 }
 
 @Composable
-private fun WordChip(
+private fun WordRow(
     word: String,
+    translation: String?,
     isPangram: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Row(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
+            .fillMaxWidth()
             .background(
                 if (isPangram) {
-                    MaterialTheme.colorScheme.primary
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                 } else {
                     MaterialTheme.colorScheme.surface
                 }
             )
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = word.uppercase(),
-            fontSize = 14.sp,
+            fontSize = 16.sp,
             fontWeight = if (isPangram) FontWeight.Bold else FontWeight.Medium,
             color = if (isPangram) {
-                MaterialTheme.colorScheme.onPrimary
+                MaterialTheme.colorScheme.primary
             } else {
                 MaterialTheme.colorScheme.onSurface
             }
+        )
+
+        Text(
+            text = translation ?: "-",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
     }
 }

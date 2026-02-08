@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.jeripurnama.pentaword.presentation.screens.GameScreen
+import com.jeripurnama.pentaword.presentation.navigation.PentawordNavGraph
 import com.jeripurnama.pentaword.ui.theme.PentawordTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PentawordTheme {
-                GameScreen()
+                PentawordNavGraph()
             }
         }
     }

@@ -2,9 +2,10 @@ package com.jeripurnama.pentaword.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Spelling Bee inspired colors
-val Gold = Color(0xFFF7DA21)
-val GoldDark = Color(0xFFE6C800)
+// Pentaword brand colors
+val Teal = Color(0xFF025B62)
+val TealDark = Color(0xFF014950)
+val TealLight = Color(0xFF037A84)
 val LightGray = Color(0xFFE6E6E6)
 val DarkGray = Color(0xFF666666)
 val TextBlack = Color(0xFF222222)
