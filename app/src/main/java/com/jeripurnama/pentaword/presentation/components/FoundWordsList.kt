@@ -31,9 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jeripurnama.pentaword.R
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -61,7 +63,7 @@ fun FoundWordsList(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Found Words (${foundWords.size})",
+                text = stringResource(R.string.label_found_words, foundWords.size),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -73,7 +75,11 @@ fun FoundWordsList(
                 } else {
                     Icons.Default.KeyboardArrowDown
                 },
-                contentDescription = if (isExpanded) "Collapse" else "Expand",
+                contentDescription = if (isExpanded) {
+                    stringResource(R.string.cd_collapse)
+                } else {
+                    stringResource(R.string.cd_expand)
+                },
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -92,7 +98,7 @@ fun FoundWordsList(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No words found yet",
+                        text = stringResource(R.string.msg_no_words_found),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )

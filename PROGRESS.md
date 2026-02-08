@@ -8,8 +8,8 @@ A NYT Spelling Bee clone game for Android.
 |-------|-------|
 | **Package Name** | `com.jeripurnama.pentaword` |
 | **App Name** | Pentaword |
-| **Min SDK** | 35 (Android 15) |
-| **Target SDK** | 35 |
+| **Min SDK** | 26 (Android 8.0 Oreo) |
+| **Target SDK** | 35 (Play Console requirement) |
 | **Compile SDK** | 35 |
 | **Language** | Kotlin |
 | **UI Framework** | Jetpack Compose + Material3 |
@@ -20,10 +20,15 @@ A NYT Spelling Bee clone game for Android.
 ### API Level 35 Requirement
 
 Starting August 2024, Google Play requires:
-- **New apps**: Must target API level 35 or higher
-- **App updates**: Must target API level 35 or higher
+- **New apps**: Must **target** API level 35 or higher
+- **App updates**: Must **target** API level 35 or higher
 
-This project is configured with `minSdk = 35` to comply with these requirements.
+**Important distinction:**
+- `targetSdk = 35` → Required for Play Console (what Android version you test against)
+- `minSdk = 26` → Device compatibility (supports ~90% of Android devices, required for adaptive icons)
+- `compileSdk = 35` → Latest APIs available for development
+
+This project uses `targetSdk = 35` for Play Console compliance while `minSdk = 24` ensures broad device compatibility.
 
 ### Pre-Launch Checklist
 
@@ -192,8 +197,38 @@ app/src/main/java/com/jeripurnama/pentaword/
 | Navigation Compose | 2.8.4 |
 | Lifecycle | 2.8.7 |
 | Core KTX | 1.15.0 |
+| Coroutines Android | 1.9.0 |
+
+## Project Rules
+
+See `CLAUDE.md` for AI assistant rules including:
+- Git commit/push policy (user handles)
+- Mandatory error checking after code updates
+- Code quality standards
 
 ## Changelog
+
+### 2026-02-08 (Update 4)
+
+- Fixed minSdk: changed from 35 to 26 for device compatibility
+- Clarified Play Console requirement (targetSdk vs minSdk)
+- App now supports Android 8.0+ (~90% of devices)
+
+### 2026-02-08 (Update 3)
+
+- Extracted all hardcoded strings to `strings.xml`
+- Updated FoundWordsList.kt to use stringResource
+- Updated ScoreDisplay.kt to use stringResource
+- Updated GameScreen.kt to use stringResource
+- Updated ActionButtons.kt to use stringResource
+- Updated WordDisplay.kt to use stringResource
+- All files now comply with no-hardcoded-strings rule
+
+### 2026-02-08 (Update 2)
+
+- Added `kotlinx-coroutines-android` dependency
+- Created `CLAUDE.md` with project rules
+- Added post-update error check requirements
 
 ### 2026-02-08
 

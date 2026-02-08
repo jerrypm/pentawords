@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jeripurnama.pentaword.R
 import com.jeripurnama.pentaword.domain.Message
 
 @Composable
@@ -36,7 +38,6 @@ fun WordDisplay(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Current word display
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -68,7 +69,7 @@ fun WordDisplay(
                 )
             } else {
                 Text(
-                    text = "Type or click",
+                    text = stringResource(R.string.hint_type_or_click),
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
                     textAlign = TextAlign.Center
@@ -76,7 +77,6 @@ fun WordDisplay(
             }
         }
 
-        // Message display
         Column(
             modifier = Modifier
                 .fillMaxWidth()

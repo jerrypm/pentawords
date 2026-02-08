@@ -16,9 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jeripurnama.pentaword.R
 
 @Composable
 fun ActionButtons(
@@ -32,7 +34,6 @@ fun ActionButtons(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Delete Button
         OutlinedButton(
             onClick = onDeleteClick,
             shape = RoundedCornerShape(24.dp),
@@ -40,7 +41,7 @@ fun ActionButtons(
             modifier = Modifier.height(48.dp)
         ) {
             Text(
-                text = "Delete",
+                text = stringResource(R.string.btn_delete),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -49,7 +50,6 @@ fun ActionButtons(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Shuffle Button
         OutlinedButton(
             onClick = onShuffleClick,
             shape = RoundedCornerShape(24.dp),
@@ -57,7 +57,7 @@ fun ActionButtons(
             modifier = Modifier.height(48.dp)
         ) {
             Text(
-                text = "Shuffle",
+                text = stringResource(R.string.btn_shuffle),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -66,7 +66,6 @@ fun ActionButtons(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Enter Button
         Button(
             onClick = onEnterClick,
             shape = RoundedCornerShape(24.dp),
@@ -76,7 +75,7 @@ fun ActionButtons(
             modifier = Modifier.height(48.dp)
         ) {
             Text(
-                text = "Enter",
+                text = stringResource(R.string.btn_enter),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onPrimary

@@ -27,9 +27,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.jeripurnama.pentaword.R
 import com.jeripurnama.pentaword.presentation.components.ActionButtons
 import com.jeripurnama.pentaword.presentation.components.FoundWordsList
 import com.jeripurnama.pentaword.presentation.components.Honeycomb
@@ -50,7 +52,7 @@ fun GameScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Pentaword",
+                        text = stringResource(R.string.app_name),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -60,7 +62,7 @@ fun GameScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "New Puzzle"
+                            contentDescription = stringResource(R.string.cd_new_puzzle)
                         )
                     }
                 },
