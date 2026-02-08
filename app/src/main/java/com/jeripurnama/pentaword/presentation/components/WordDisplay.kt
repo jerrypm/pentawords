@@ -3,7 +3,7 @@ package com.jeripurnama.pentaword.presentation.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,14 +33,16 @@ fun WordDisplay(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         // Current word display
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             if (currentWord.isNotEmpty()) {
                 Text(
@@ -75,23 +77,24 @@ fun WordDisplay(
         }
 
         // Message display
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(32.dp),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             AnimatedVisibility(
                 visible = message != null,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                message?.let {
+                if (message != null) {
                     Text(
-                        text = it.text,
+                        text = message.text,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = if (it.isError) {
+                        color = if (message.isError) {
                             MaterialTheme.colorScheme.error
                         } else {
                             MaterialTheme.colorScheme.primary

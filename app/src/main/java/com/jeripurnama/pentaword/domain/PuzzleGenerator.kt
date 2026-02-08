@@ -63,12 +63,16 @@ class PuzzleGenerator(private val dictionary: Set<String>) {
 
     private fun generateFallbackPuzzle(): Puzzle {
         val letters = listOf('P', 'E', 'N', 'T', 'A', 'W', 'O')
+        val centerLetter = 'E'
+        val validWords = setOf("PENTA", "WEPT", "PEAT", "NEAT", "TAPE", "ANTE", "EATEN", "WEEN", "WEEN")
+            .filter { it.contains(centerLetter) }
+            .toSet()
         return Puzzle(
-            centerLetter = 'E',
-            outerLetters = letters.filter { it != 'E' },
-            validWords = setOf("PENTA", "WEPT", "PEAT", "NEAT", "TAPE", "ANTE", "PANT"),
+            centerLetter = centerLetter,
+            outerLetters = letters.filter { it != centerLetter },
+            validWords = validWords,
             pangrams = emptySet(),
-            maxScore = 30
+            maxScore = validWords.sumOf { if (it.length == 4) 1 else it.length }
         )
     }
 }
