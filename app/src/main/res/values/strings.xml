@@ -46,4 +46,36 @@
     <string name="subtitle_select_language">Choose your preferred language for word translations</string>
     <string name="btn_continue">Continue</string>
     <string name="label_no_translation">-</string>
+
+    <!-- Stage Selection -->
+    <string name="title_select_stage">Select Stage</string>
+    <string name="subtitle_select_stage">Complete stages to unlock the next one</string>
+    <string name="stage_legend_title">Stage Types:</string>
+    <string name="stage_legend_find_words">Numbers = Find Words</string>
+    <string name="stage_legend_memory">Memory = Remember Positions</string>
+    <string name="stage_type_words">%d words</string>
+    <string name="stage_type_memory">%d pos</string>
+    <string name="content_desc_locked">Locked</string>
+    <string name="content_desc_completed">Completed</string>
+
+    <!-- Game Timer -->
+    <string name="timer_format">%1$d:%2$02d</string>
+    <string name="label_stage">Stage %1$d</string>
+    <string name="label_progress">%1$d / %2$d</string>
+
+    <!-- Game Over -->
+    <string name="title_stage_complete">Stage Complete!</string>
+    <string name="title_stage_failed">Time\'s Up!</string>
+    <string name="msg_stage_complete">Great job! You completed the stage.</string>
+    <string name="msg_stage_failed">You ran out of time. Try again from Stage 1.</string>
+    <string name="btn_next_stage">Next Stage</string>
+    <string name="btn_back_to_stages">Back to Stages</string>
+    <string name="btn_retry">Try Again</string>
+
+    <!-- Memory Game -->
+    <string name="title_memory_game">Remember the Sequence</string>
+    <string name="msg_watch_carefully">Watch carefully!</string>
+    <string name="msg_your_turn">Your turn!</string>
+    <string name="msg_correct">Correct!</string>
+    <string name="msg_wrong">Wrong! Game Over.</string>
 </resources>

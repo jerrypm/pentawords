@@ -91,6 +91,30 @@ This project uses `targetSdk = 35` for Play Console compliance while `minSdk = 2
 | Teal color scheme (#025B62) | Done |
 | Improved honeycomb layout | Done |
 
+### Stage System (Version 1.0.0)
+
+| Feature | Status |
+|---------|--------|
+| 16 stages total | Done |
+| Stage selection screen | Done |
+| Find Words stages (2 per cycle) | Done |
+| Memory Number stages (1 per cycle) | Done |
+| 5-minute timer per stage | Done |
+| Auto-save progress | Done |
+| Fail resets to stage 1 | Done |
+
+### Stage Pattern
+
+| Stage | Type | Requirement |
+|-------|------|-------------|
+| 1, 2 | Find Words | 1, 2 words |
+| 3 | Memory | 4 positions |
+| 4, 5 | Find Words | 3, 4 words |
+| 6 | Memory | 5 positions |
+| 7, 8 | Find Words | 5, 6 words |
+| 9 | Memory | 6 positions |
+| ... | ... | ... |
+
 ### Supported Languages
 
 | Language | Code | Native Name |
@@ -100,6 +124,9 @@ This project uses `targetSdk = 35` for Play Console compliance while `minSdk = 2
 | Chinese | zh | 中文 |
 | Japanese | ja | 日本語 |
 | Korean | ko | 한국어 |
+| Thai | th | ภาษาไทย |
+| Myanmar | my | မြန်မာဘာသာ |
+| Vietnamese | vi | Tiếng Việt |
 
 ## Project Structure
 
@@ -107,12 +134,14 @@ This project uses `targetSdk = 35` for Play Console compliance while `minSdk = 2
 app/src/main/java/com/jeripurnama/pentaword/
 ├── data/
 │   ├── DictionaryRepository.kt       # Word dictionary management
+│   ├── GameProgressRepository.kt     # Stage progress persistence
 │   ├── LanguagePreferences.kt        # Language settings storage
 │   └── TranslationRepository.kt      # Word translations
 ├── domain/
 │   ├── GameState.kt                  # Game state & rank definitions
-│   ├── Language.kt                   # Language enum
+│   ├── Language.kt                   # Language enum (8 languages)
 │   ├── PuzzleGenerator.kt            # Puzzle generation logic
+│   ├── Stage.kt                      # Stage models & configuration
 │   └── WordValidator.kt              # Word validation rules
 ├── presentation/
 │   ├── components/
@@ -123,18 +152,32 @@ app/src/main/java/com/jeripurnama/pentaword/
 │   │   ├── ScoreDisplay.kt           # Score & rank progress
 │   │   └── WordDisplay.kt            # Current word input display
 │   ├── navigation/
-│   │   └── NavGraph.kt               # Navigation setup
+│   │   └── NavGraph.kt               # Navigation with stage routes
 │   ├── screens/
-│   │   ├── GameScreen.kt             # Main game screen
-│   │   └── LanguageSelectionScreen.kt # Language picker
+│   │   ├── GameScreen.kt             # Main game with timer
+│   │   ├── LanguageSelectionScreen.kt # Language picker
+│   │   ├── MemoryNumberScreen.kt     # Memory game screen
+│   │   └── StageSelectionScreen.kt   # 16-stage selector
 │   └── viewmodel/
-│       ├── GameViewModel.kt          # Game logic & state management
-│       └── LanguageViewModel.kt      # Language state management
+│       ├── GameViewModel.kt          # Game logic & state
+│       ├── LanguageViewModel.kt      # Language state
+│       └── StageViewModel.kt         # Stage state management
 ├── ui/theme/
 │   ├── Color.kt                      # Teal color scheme
 │   ├── Theme.kt                      # Material3 theme
 │   └── Type.kt                       # Typography
 └── MainActivity.kt                   # Entry point
+
+app/src/main/assets/
+├── dictionary.txt                    # English word dictionary
+├── translations_id.txt               # Indonesian translations
+├── translations_ja.txt               # Japanese translations
+├── translations_ko.txt               # Korean translations
+├── translations_ms.txt               # Malaysian translations
+├── translations_my.txt               # Myanmar translations
+├── translations_th.txt               # Thai translations
+├── translations_vi.txt               # Vietnamese translations
+└── translations_zh.txt               # Chinese translations
 ```
 
 ## Development Progress
@@ -229,6 +272,35 @@ See `CLAUDE.md` for AI assistant rules including:
 - Code quality standards
 
 ## Changelog
+
+### 2026-02-09 (Update 8) - Stage System
+
+**Major Feature: 16-Stage Game System**
+- Added Stage domain models (Stage.kt, StageType, GameProgress)
+- Created GameProgressRepository for auto-save using DataStore
+- Created StageViewModel for stage state management
+- Created StageSelectionScreen with 4x4 grid UI
+  - Unlocked stages: circle with number (#025B62)
+  - Locked stages: circle with lock icon (#949499)
+  - Completed stages: circle with star icon
+- Created MemoryNumberScreen for memory game stages
+  - 3x3 grid of buttons
+  - Watch sequence and repeat pattern
+  - Progressive difficulty (4-8 positions)
+- Updated GameScreen with:
+  - 5-minute countdown timer
+  - Stage progress indicator
+  - Stage completion/failure dialogs
+- Updated navigation (NavGraph.kt) with new routes:
+  - stage_selection
+  - stage_game/{stageId}/{stageType}/{requirement}
+  - memory_game/{stageId}/{requirement}
+- Added 3 new languages:
+  - Thai (th) - translations_th.txt
+  - Myanmar (my) - translations_my.txt
+  - Vietnamese (vi) - translations_vi.txt
+- Updated Language.kt with new language entries
+- Added new strings for stage system
 
 ### 2026-02-08 (Update 7)
 
