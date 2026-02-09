@@ -68,7 +68,7 @@ object StageConfig {
     /**
      * Get requirement based on stage ID and type
      * - FIND_WORDS: Stage 1 = 1 word, Stage 2 = 2 words, Stage 4 = 3 words, Stage 5 = 4 words, etc.
-     * - MEMORY_NUMBER: Stage 3 = 4 positions, Stage 6 = 5 positions, Stage 9 = 6 positions, etc.
+     * - MEMORY_NUMBER (Chimp Test): Stage 3 = 5 numbers, Stage 6 = 6 numbers, Stage 9 = 7 numbers, etc.
      */
     private fun getRequirement(stageId: Int, type: StageType): Int {
         return when (type) {
@@ -80,8 +80,9 @@ object StageConfig {
                 groupIndex * 2 + positionInGroup + 1
             }
             StageType.MEMORY_NUMBER -> {
-                // Stage 3 = 4 positions, Stage 6 = 5, Stage 9 = 6, Stage 12 = 7, Stage 15 = 8
-                3 + (stageId / 3)
+                // Chimp Test style: numbers 1 to N displayed on grid
+                // Stage 3 = 5 numbers (1-5), Stage 6 = 6 numbers (1-6), Stage 9 = 7, Stage 12 = 8, Stage 15 = 9
+                4 + (stageId / 3)
             }
         }
     }

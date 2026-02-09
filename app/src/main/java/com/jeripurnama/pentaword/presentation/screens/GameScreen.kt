@@ -121,7 +121,6 @@ fun GameScreen(
     if (showCompleteDialog) {
         StageResultDialog(
             isSuccess = true,
-            stageId = stageId,
             onDismiss = onBack
         )
     }
@@ -130,7 +129,6 @@ fun GameScreen(
     if (showFailedDialog) {
         StageResultDialog(
             isSuccess = false,
-            stageId = stageId,
             onDismiss = {
                 onStageFailed()
                 onBack()
@@ -312,7 +310,6 @@ private fun StageProgressIndicator(
 @Composable
 private fun StageResultDialog(
     isSuccess: Boolean,
-    stageId: Int,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {

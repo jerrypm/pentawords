@@ -273,6 +273,33 @@ See `CLAUDE.md` for AI assistant rules including:
 
 ## Changelog
 
+### 2026-02-09 (Update 9) - Chimp Test Implementation
+
+**Memory Game → Chimp Test (Human Benchmark style)**
+- Completely redesigned MemoryNumberScreen to match Human Benchmark Chimp Test
+- Changed from "watch and repeat sequence" to "click numbers 1-N in order"
+- Updated grid layout: 4x5 grid (20 cells) for better number distribution
+- Game flow:
+  1. Numbers 1-N appear randomly on grid (all visible)
+  2. Player clicks "1" to start
+  3. All other numbers hide (become white boxes)
+  4. Player must click remaining positions in order (2, 3, 4...)
+  5. Wrong click = game over
+  6. All correct = stage complete
+- Visual improvements:
+  - Number cells: WHITE boxes with teal text (like Human Benchmark)
+  - Empty cells: Almost invisible background
+  - Subtle teal border on active cells
+- Fixed: Clicking empty cell now ignored (not game over)
+- Updated Stage.kt requirement calculation:
+  - Stage 3: 5 numbers (1-5)
+  - Stage 6: 6 numbers (1-6)
+  - Stage 9: 7 numbers (1-7)
+  - Stage 12: 8 numbers (1-8)
+  - Stage 15: 9 numbers (1-9)
+- Updated strings.xml with Chimp Test specific messages
+- Updated StageSelectionScreen to show "1-5", "1-6" format
+
 ### 2026-02-09 (Update 8) - Stage System
 
 **Major Feature: 16-Stage Game System**
@@ -362,4 +389,4 @@ See `CLAUDE.md` for AI assistant rules including:
 
 ---
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-02-09*

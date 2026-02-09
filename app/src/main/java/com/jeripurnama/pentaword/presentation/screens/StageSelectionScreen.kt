@@ -227,7 +227,7 @@ private fun StageItem(
         Text(
             text = when (stage.type) {
                 StageType.FIND_WORDS -> stringResource(R.string.stage_type_words, stage.requirement)
-                StageType.MEMORY_NUMBER -> stringResource(R.string.stage_type_memory, stage.requirement)
+                StageType.MEMORY_NUMBER -> stringResource(R.string.stage_type_chimp, stage.requirement)
             },
             fontSize = 10.sp,
             color = if (stage.isUnlocked) UnlockedColor else LockedColor,

@@ -10,11 +10,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -28,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,67 +42,77 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jeripurnama.pentaword.R
-import com.jeripurnama.pentaword.domain.StageConfig
-import kotlinx.coroutines.delay
 
 private val PrimaryColor = Color(0xFF025B62)
-private val HighlightColor = Color(0xFFFFD700)
 private val ErrorColor = Color(0xFFE53935)
 private val SuccessColor = Color(0xFF4CAF50)
+private val CellNumberColor = Color.White            // WHITE boxes like Human Benchmark
+private val CellEmptyColor = Color(0xFFF5F5F5)       // Almost invisible background
 
-enum class MemoryGamePhase {
-    SHOWING_SEQUENCE,
-    PLAYER_TURN,
-    CORRECT,
-    WRONG,
-    COMPLETED
+/**
+ * Game phases for Chimp Test
+ */
+enum class ChimpTestPhase {
+    SHOWING_NUMBERS,  // All numbers visible, waiting for player to click "1"
+    NUMBERS_HIDDEN,   // Numbers hidden, player clicking remaining numbers
+    WRONG,            // Player clicked wrong position
+    COMPLETED         // All numbers clicked correctly
 }
+
+/**
+ * Represents a cell in the grid
+ */
+data class GridCell(
+    val position: Int,        // Position in grid (0-19 for 4x5 grid)
+    val number: Int?,         // The number displayed (1-N), null if empty cell
+    val isClicked: Boolean = false
+)
 
 @Composable
 fun MemoryNumberScreen(
     stageId: Int,
-    requirement: Int, // Number of positions to remember
+    requirement: Int, // Number of numbers to remember (5-9)
     timeRemainingMs: Long,
-    onComplete: (Long) -> Unit, // completionTime in ms
+    onComplete: (Long) -> Unit,
     onFailed: () -> Unit,
     onBack: () -> Unit
 ) {
-    var gamePhase by remember { mutableStateOf(MemoryGamePhase.SHOWING_SEQUENCE) }
-    val sequence = remember { mutableStateListOf<Int>() }
-    var currentShowIndex by remember { mutableIntStateOf(-1) }
-    var playerInputIndex by remember { mutableIntStateOf(0) }
-    var highlightedButton by remember { mutableIntStateOf(-1) }
-    var startTime by remember { mutableStateOf(0L) }
+    val gridRows = 5
+    val gridCols = 4
+    val totalCells = gridRows * gridCols
 
-    // Initialize sequence
-    LaunchedEffect(stageId) {
-        sequence.clear()
-        val positions = (0..8).shuffled().take(requirement)
-        sequence.addAll(positions)
-        gamePhase = MemoryGamePhase.SHOWING_SEQUENCE
-        startTime = System.currentTimeMillis()
+    var gamePhase by remember { mutableStateOf(ChimpTestPhase.SHOWING_NUMBERS) }
+    var nextExpectedNumber by remember { mutableIntStateOf(1) }
+    var startTime by remember { mutableStateOf(0L) }
+    var lastClickedPosition by remember { mutableIntStateOf(-1) }
+
+    // Generate random positions for numbers
+    val gridCells = remember(stageId, requirement) {
+        val randomPositions = (0 until totalCells).shuffled().take(requirement)
+        val cells = MutableList(totalCells) { pos ->
+            GridCell(position = pos, number = null)
+        }
+        randomPositions.forEachIndexed { index, pos ->
+            cells[pos] = GridCell(position = pos, number = index + 1)
+        }
+        cells
     }
 
-    // Show sequence animation
-    LaunchedEffect(gamePhase) {
-        if (gamePhase == MemoryGamePhase.SHOWING_SEQUENCE) {
-            delay(1000) // Initial delay
-            for (i in sequence.indices) {
-                currentShowIndex = i
-                highlightedButton = sequence[i]
-                delay(800) // Show each position
-                highlightedButton = -1
-                delay(300) // Gap between positions
-            }
-            currentShowIndex = -1
-            gamePhase = MemoryGamePhase.PLAYER_TURN
-            playerInputIndex = 0
-        }
+    // Track which cells have been clicked
+    var clickedCells by remember { mutableStateOf(setOf<Int>()) }
+
+    // Initialize game
+    LaunchedEffect(stageId) {
+        gamePhase = ChimpTestPhase.SHOWING_NUMBERS
+        nextExpectedNumber = 1
+        clickedCells = emptySet()
+        startTime = System.currentTimeMillis()
     }
 
     // Check for time out
     LaunchedEffect(timeRemainingMs) {
-        if (timeRemainingMs <= 0 && gamePhase != MemoryGamePhase.COMPLETED) {
+        if (timeRemainingMs <= 0 && gamePhase != ChimpTestPhase.COMPLETED && gamePhase != ChimpTestPhase.WRONG) {
+            gamePhase = ChimpTestPhase.WRONG
             onFailed()
         }
     }
@@ -114,7 +124,7 @@ fun MemoryNumberScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Top bar with back button and timer
+        // Top bar with back button, stage info, and timer
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -146,31 +156,30 @@ fun MemoryNumberScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Game title
         Text(
-            text = stringResource(R.string.title_memory_game),
+            text = stringResource(R.string.title_chimp_test),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // Status message
+        // Instructions / Status
         Text(
             text = when (gamePhase) {
-                MemoryGamePhase.SHOWING_SEQUENCE -> stringResource(R.string.msg_watch_carefully)
-                MemoryGamePhase.PLAYER_TURN -> stringResource(R.string.msg_your_turn)
-                MemoryGamePhase.CORRECT -> stringResource(R.string.msg_correct)
-                MemoryGamePhase.WRONG -> stringResource(R.string.msg_wrong)
-                MemoryGamePhase.COMPLETED -> stringResource(R.string.title_stage_complete)
+                ChimpTestPhase.SHOWING_NUMBERS -> stringResource(R.string.msg_chimp_click_one)
+                ChimpTestPhase.NUMBERS_HIDDEN -> stringResource(R.string.msg_chimp_continue, nextExpectedNumber)
+                ChimpTestPhase.WRONG -> stringResource(R.string.msg_wrong)
+                ChimpTestPhase.COMPLETED -> stringResource(R.string.title_stage_complete)
             },
             fontSize = 16.sp,
             color = when (gamePhase) {
-                MemoryGamePhase.CORRECT, MemoryGamePhase.COMPLETED -> SuccessColor
-                MemoryGamePhase.WRONG -> ErrorColor
+                ChimpTestPhase.COMPLETED -> SuccessColor
+                ChimpTestPhase.WRONG -> ErrorColor
                 else -> MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             },
             textAlign = TextAlign.Center
@@ -180,48 +189,74 @@ fun MemoryNumberScreen(
 
         // Progress indicator
         Text(
-            text = stringResource(R.string.label_progress, playerInputIndex, requirement),
+            text = stringResource(R.string.label_progress, nextExpectedNumber - 1, requirement),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // 3x3 Grid of buttons
+        // 4x5 Grid
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            for (row in 0..2) {
+            for (row in 0 until gridRows) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    for (col in 0..2) {
-                        val buttonIndex = row * 3 + col
-                        MemoryButton(
-                            index = buttonIndex,
-                            isHighlighted = highlightedButton == buttonIndex,
-                            isClickable = gamePhase == MemoryGamePhase.PLAYER_TURN,
-                            gamePhase = gamePhase,
-                            onClick = {
-                                if (gamePhase == MemoryGamePhase.PLAYER_TURN) {
-                                    highlightedButton = buttonIndex
+                    for (col in 0 until gridCols) {
+                        val cellIndex = row * gridCols + col
+                        val cell = gridCells[cellIndex]
 
-                                    if (sequence[playerInputIndex] == buttonIndex) {
-                                        // Correct
-                                        playerInputIndex++
-                                        if (playerInputIndex >= sequence.size) {
-                                            gamePhase = MemoryGamePhase.COMPLETED
-                                            val completionTime = System.currentTimeMillis() - startTime
-                                            onComplete(completionTime)
-                                        } else {
-                                            gamePhase = MemoryGamePhase.CORRECT
-                                        }
-                                    } else {
-                                        // Wrong
-                                        gamePhase = MemoryGamePhase.WRONG
-                                        onFailed()
+                        ChimpCell(
+                            cell = cell,
+                            showNumber = when {
+                                cell.number == null -> false
+                                gamePhase == ChimpTestPhase.SHOWING_NUMBERS -> true
+                                cellIndex in clickedCells -> false
+                                else -> false
+                            },
+                            isClickable = gamePhase == ChimpTestPhase.SHOWING_NUMBERS ||
+                                    gamePhase == ChimpTestPhase.NUMBERS_HIDDEN,
+                            isClicked = cellIndex in clickedCells,
+                            isWrongClick = gamePhase == ChimpTestPhase.WRONG && lastClickedPosition == cellIndex,
+                            hasNumber = cell.number != null,
+                            onClick = {
+                                if (gamePhase == ChimpTestPhase.WRONG || gamePhase == ChimpTestPhase.COMPLETED) {
+                                    return@ChimpCell
+                                }
+
+                                val clickedNumber = cell.number
+
+                                if (clickedNumber == null) {
+                                    // Clicked empty cell - ignore (like Human Benchmark)
+                                    return@ChimpCell
+                                }
+
+                                if (clickedNumber == nextExpectedNumber) {
+                                    // Correct!
+                                    clickedCells = clickedCells + cellIndex
+
+                                    if (nextExpectedNumber == 1) {
+                                        // First number clicked, hide all other numbers
+                                        gamePhase = ChimpTestPhase.NUMBERS_HIDDEN
                                     }
+
+                                    nextExpectedNumber++
+
+                                    if (nextExpectedNumber > requirement) {
+                                        // All numbers clicked correctly!
+                                        gamePhase = ChimpTestPhase.COMPLETED
+                                        val completionTime = System.currentTimeMillis() - startTime
+                                        onComplete(completionTime)
+                                    }
+                                } else {
+                                    // Wrong number clicked
+                                    lastClickedPosition = cellIndex
+                                    gamePhase = ChimpTestPhase.WRONG
+                                    onFailed()
                                 }
                             }
                         )
@@ -232,54 +267,47 @@ fun MemoryNumberScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Continue after correct or restart showing sequence
-        LaunchedEffect(gamePhase) {
-            if (gamePhase == MemoryGamePhase.CORRECT) {
-                delay(500)
-                highlightedButton = -1
-                gamePhase = MemoryGamePhase.PLAYER_TURN
+        // Result buttons
+        when (gamePhase) {
+            ChimpTestPhase.COMPLETED -> {
+                Button(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(horizontal = 32.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = SuccessColor
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.btn_next_stage),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
-        }
-
-        // Show result buttons
-        if (gamePhase == MemoryGamePhase.COMPLETED) {
-            Button(
-                onClick = onBack,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 32.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryColor
-                )
-            ) {
-                Text(
-                    text = stringResource(R.string.btn_next_stage),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
+            ChimpTestPhase.WRONG -> {
+                Button(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(horizontal = 32.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ErrorColor
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.btn_back_to_stages),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
-        }
-
-        if (gamePhase == MemoryGamePhase.WRONG) {
-            Button(
-                onClick = onBack,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 32.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ErrorColor
-                )
-            ) {
-                Text(
-                    text = stringResource(R.string.btn_back_to_stages),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
+            else -> { /* No button shown during gameplay */ }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -287,44 +315,53 @@ fun MemoryNumberScreen(
 }
 
 @Composable
-private fun MemoryButton(
-    index: Int,
-    isHighlighted: Boolean,
+private fun ChimpCell(
+    cell: GridCell,
+    showNumber: Boolean,
     isClickable: Boolean,
-    gamePhase: MemoryGamePhase,
+    isClicked: Boolean,
+    isWrongClick: Boolean,
+    hasNumber: Boolean,
     onClick: () -> Unit
 ) {
     val backgroundColor by animateColorAsState(
         targetValue = when {
-            isHighlighted && gamePhase == MemoryGamePhase.SHOWING_SEQUENCE -> HighlightColor
-            isHighlighted && gamePhase == MemoryGamePhase.CORRECT -> SuccessColor
-            isHighlighted && gamePhase == MemoryGamePhase.WRONG -> ErrorColor
-            isHighlighted && gamePhase == MemoryGamePhase.PLAYER_TURN -> PrimaryColor
-            else -> MaterialTheme.colorScheme.surface
+            isWrongClick -> ErrorColor
+            isClicked -> CellEmptyColor              // Clicked cells fade out
+            hasNumber -> CellNumberColor             // WHITE boxes for number cells
+            else -> CellEmptyColor                   // Empty cells almost invisible
         },
-        animationSpec = tween(200),
-        label = "buttonColor"
+        animationSpec = tween(150),
+        label = "cellColor"
     )
 
-    val borderColor = when {
-        isHighlighted -> backgroundColor
-        else -> PrimaryColor.copy(alpha = 0.3f)
+    val textColor = when {
+        isWrongClick -> Color.White
+        showNumber -> PrimaryColor                   // Teal text on white background
+        else -> Color.Transparent
     }
 
     Box(
         modifier = Modifier
-            .size(80.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .width(70.dp)
+            .aspectRatio(1f)
+            .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
-            .border(2.dp, borderColor, RoundedCornerShape(16.dp))
-            .clickable(enabled = isClickable) { onClick() },
+            .border(
+                width = if (hasNumber && !isClicked) 2.dp else 0.dp,
+                color = if (hasNumber && !isClicked) PrimaryColor.copy(alpha = 0.3f) else Color.Transparent,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clickable(enabled = isClickable && !isClicked) { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = (index + 1).toString(),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = if (isHighlighted) Color.White else PrimaryColor
-        )
+        if (showNumber && cell.number != null) {
+            Text(
+                text = cell.number.toString(),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = textColor
+            )
+        }
     }
 }
